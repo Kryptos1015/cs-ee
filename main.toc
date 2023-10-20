@@ -1,0 +1,15 @@
+\contentsline {section}{\numberline {1}Introduction}{1}{}%
+\contentsline {section}{\numberline {2}Theoretical Background}{2}{}%
+\contentsline {subsection}{\numberline {2.1}Topic Overview}{2}{}%
+\contentsline {subsection}{\numberline {2.2}Naive Algorithm}{2}{}%
+\contentsline {subsection}{\numberline {2.3}Knuth-Morris-Pratt Algorithm}{2}{}%
+\contentsline {subsection}{\numberline {2.4}Rabin-Karp Algorithm}{2}{}%
+\contentsline {section}{\numberline {3}Experimental Methodology}{2}{}%
+\contentsline {subsection}{\numberline {3.1}Research Question Decomposition}{2}{}%
+\contentsline {subsection}{\numberline {3.2}Measuring Performance}{2}{}%
+\contentsline {subsection}{\numberline {3.3}Application to Domains}{2}{}%
+\contentsline {section}{\numberline {4}Experimental Results Analysis}{2}{}%
+\contentsline {section}{\numberline {5}Conclusion}{2}{}%
+\contentsline {section}{\numberline {6}References}{2}{}%
+\contentsline {subsection}{\numberline {6.1}Algorithmic issues}{3}{}%
+\contentsline {section}{\numberline {7}Implementation}{5}{}%
