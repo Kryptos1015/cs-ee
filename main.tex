@@ -151,31 +151,68 @@ an array of 0s of length $m$. For demonstration purposes, $P$ will equal "$ABABA
 \end{table}
 
 \begin{center}
-	\begin{singlespace}
-	\begin{minipage}{0.75\linewidth}
-	\begin{algorithm}[H]
-		$length \leftarrow 0$ \;
-		$LPS \leftarrow m * [0]$ \;
-		\While{$i < m$}{
-			\If{$P[i] == P[m]$}{
-				$length \leftarrow length + 1$\;
-				$LPS[i] \leftarrow 0$\;
-				$i \leftarrow i + 1$\;
-			}
-			\ElseIf{$length \neq 0$}{
-				$length \leftarrow LPS[length - 1]$\;
-			}
-			\Else{
-				$LPS[i] \leftarrow 0$\;
-				$i \leftarrow i + 1$\;
-			}
+\begin{singlespace}
+\begin{minipage}{0.75\linewidth}
+\begin{algorithm}[H]
+	$length \leftarrow 0$ \;
+	$LPS \leftarrow m * [0]$ \;
+	\While{$i < m$}{
+		\If{$P[i] == P[m]$}{
+			$length \leftarrow length + 1$\;
+			$LPS[i] \leftarrow 0$\;
+			$i \leftarrow i + 1$\;
 		}
-		\textbf{return} $LPS$
-		\caption{CalculateLPSArray}
-	\end{algorithm}
-	\end{minipage}
-	\end{singlespace}
-	\end{center}
+		\ElseIf{$length \neq 0$}{
+			$length \leftarrow LPS[length - 1]$\;
+		}
+		\Else{
+			$LPS[i] \leftarrow 0$\;
+			$i \leftarrow i + 1$\;
+		}
+	}
+	\textbf{return} $LPS$
+	\caption{CalculateLPSArray}
+\end{algorithm}
+\end{minipage}
+\end{singlespace}
+\end{center}
+
+Afterwards, the main phase involves applying the calculated LPS table on $T$. The
+indexes $i$ and $j$ both begin at 0, and are incremented while $P_{i}$ matches $T_{j}$. When a
+mismatch occurs, it becomes apparent that the characters in $P$ match with the characters
+of $T$ up to the mismatch ($P_{0 \ldots (i-1)} = T_{j-i \ldots j-1}$). Moreover, from the LPS table, it is known
+that $LPS[i - 1]$ represents the length of the longest part of the prefix and suffix of $P$.
+With these pieces of information, it can be concluded that the characters in $P_{0 \ldots i-1}$ do
+not need to be checked with $T_{j-i \ldots j-1}$ since it is already known that they match. Thus,
+these can be skipped in both $P$ and $T$. The exact process is presented in pseudocode here
+below:
+
+\begin{center}
+\begin{singlespace}
+\begin{minipage}{0.75\linewidth}
+\begin{algorithm}[H]
+	$length \leftarrow 0$ \;
+	$LPS \leftarrow m * [0]$ \;
+	\While{$i < m$}{
+		\If{$P[i] == P[m]$}{
+			$length \leftarrow length + 1$\;
+			$LPS[i] \leftarrow 0$\;
+			$i \leftarrow i + 1$\;
+		}
+		\ElseIf{$length \neq 0$}{
+			$length \leftarrow LPS[length - 1]$\;
+		}
+		\Else{
+			$LPS[i] \leftarrow 0$\;
+			$i \leftarrow i + 1$\;
+		}
+	}
+	\textbf{return} $LPS$
+	\caption{CalculateLPSArray}
+\end{algorithm}
+\end{minipage}
+\end{singlespace}
+\end{center}
 
 \subsection{Rabin-Karp Algorithm}
 
