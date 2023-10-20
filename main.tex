@@ -3,7 +3,7 @@
 %----------------------------------------------------------------------------------------
 
 \documentclass[12pt]{article}
-\usepackage{setspace}
+
 \input{structure.tex} % Include the file specifying the document structure and custom commands
 
 %----------------------------------------------------------------------------------------
@@ -43,12 +43,139 @@ Similarly, this paper seeks to adopt an investigative style by examining \textbf
 To examine this subject, three popular string matching algorithms were programmed and tested on their ability to carry out three tasks from three different domains. They are then evaluated on their efficiency, and applicability. To maintain focus on the research question, the reasoning and rationale behind all the decisions will be explained to demonstrate how they directly address the question.
 
 \section{Theoretical Background} % Numbered section
-
 \subsection{Topic Overview}
+String matching algorithms (often used interchangeably with string or pattern searching
+algorithms) are a subset of string algorithms. The term is composed of three parts:
+“string”, “matching”, and “algorithm”. Strings refer to an abstract data type consisting
+1
+of a sequence of characters. Matching relates to it's function to identify specific patterns
+within a larger dataset that match a criteria. As for algorithms, these can be defined as a set of instructions designed to carry out a function. These algorithms take in two
+inputs: a pattern ($P$), which is a sequence of characters being searched for within a larger
+sequence, a text ($T$). Within string matching problems, there exists two general variants
+[2]:
+
+\begin{enumerate}
+	\item \textbf{Find occurences of a pre-defined pattern in a previously unseen dataset} \\
+	Carried out using finite automata models [4] (an idealized machine used to recognize
+	patterns in a given text; it accepts or rejects the input depending on whether the
+	pre-defined pattern occurs in the text) or through the combinatorial properties of
+	strings.
+	\item \textbf{Find occurences of any identifiable patterns in a given text} \\
+	Carried out using finite automata and binary trees.
+\end{enumerate}
+
+Linking into the mentioned problem variants, these algorithms can be further classified into two categories [1]: exact, and approximate string matching algorithms. As
+its name suggests, the former refers to finding occurences of a pattern that match it to
+the character, whereas the latter allows for some variation or deviation. For the purpose
+of this investigation, the first problem variant, as well as an exact-string matching approach was chosen for all the algorithms, both for simplicity and control. Three exact
+string matching algorithms were chosen for comparison based on their popularity: Naive,
+Knuth-Morris-Pratt, and Rabin-Karp. Prior to their explanations, it is important to note
+that the following notation will be used:
+
+\begin{table}[htbp]\caption{String Matching Algorithm Notation}
+\begin{center}% used the environment to augment the vertical space
+% between the caption and the table
+\begin{tabular}{r c p{10cm} }
+\toprule
+$m$ & $=$ & Length of $P$\\
+$n$ & $=$ & Length of $T$\\
+$T_{j}$ & : & For an input text $T$ where $0 \le j \le n - 1$\\
+$P_{i}$ & : & For an input pattern $P$ where $0 \le i \le m - 1$\\
+\bottomrule
+\end{tabular}
+\end{center}
+\label{tab:StringMatchinAlgorithmNotation}
+\end{table}
 
 \subsection{Naive Algorithm}
 
+[9] Also known as the “brute-force” approach, this algorithm compares the first indexes
+of both $P$ and $T$. If $P_{i}$ equals $T_{j}$ then $i$ and $j$ are incremented and further compared. If
+$P_{i}$ reaches $m - 1$ then a variable containing the number of occurences of $P$ is incremented
+and $P_{i}$ is reset to $P_{i=0}$. On the other hand, if they do not match, then $P_{i}$ is reset and
+$j$ incremented. This repeats until $T_{j=m-1}$ is reached. Since there is no pre-processing
+phase, the only time complexity taken into account is during its matching phase, which
+is expected to be $O(n \cdot m)$ [10]. The algorithm is better expressed in pseudocode:
+
+\begin{center}
+\begin{singlespace}
+\begin{minipage}{0.75\linewidth}
+\begin{algorithm}[H]
+	$n \leftarrow T.length()$ \;
+	$m \leftarrow P.length()$ \;
+	\For{$i \leftarrow 0$ \bf{to} $n-m$}{
+		\While{$j < m$ \bf{and} $P[j] == T[i+j]$}{
+			$j \leftarrow j + 1$}
+		\If{$j == m$}{
+			\textbf{output} "Pattern found at index" + $i$}
+	}
+	\caption{Naive}
+\end{algorithm}
+\end{minipage}
+\end{singlespace}
+\end{center}
+
+The best case scenario of this process is when $P_{i=0}$ is not present in $T$, yielding an
+$O(n)$ number of comparisons, making it particularly advantageous for solving problems
+with small $n$ and $m$ values. When larger sets are used however, the algorithm's efficiency significantly deteriorates. The worst case scenario for instance would be when
+all the characters for $P$ and $T$ are the same (${P_{i=0} \ldots P_{m-1}} = {T_{j=0} \ldots T_{n-1}}$) or
+when all the characters for both $P$ and $T$ are the same except for their last characters ($({P_{i=0} \ldots P_{m-2}} = {T_{j=0} \ldots T_{n-2}}) \land (P_{m-1} = T_{n-1})$). This would yield an
+$O(m \cdot (n - m + 1))$ number of comparisons.
+
 \subsection{Knuth-Morris-Pratt Algorithm}
+
+[10] [11] This algorithm differs from the Naive approach by implementing an LPS table
+as part of the pre-processing phase. Its purpose is to keep track of the comparisons made;
+after a mismatch, it is used to calculate where to begin the next match without needing
+to reset $P$. The table is constructed by determining the largest prefix of $P$ that matches
+its largest suffix -- the main idea is to identify how many characters can be skipped, by not
+matching characters that have already been calculated to match (eliminating redundancy).
+Although appearing complicated, this can be better explained through pseudocode and a
+practical example represented through a truth table. Upon initalization, the LPS table is
+an array of 0s of length $m$. For demonstration purposes, $P$ will equal "$ABABA$":
+
+\begin{table}[!htbp]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        Index ($i$) & Pattern Character ($P_{i}$) & Length (of Suffix-Prefix match) & LPS Value ($LPS[i]$) \\
+        \hline
+        0 & A & 0 & 0 \\
+        1 & B & 0 & 0 \\
+        2 & A & 0 & 1 \\
+        3 & B & 1 & 2 \\
+        4 & A & 2 & 3 \\
+        \hline
+    \end{tabular}
+    \caption{Truth Table for Pattern "ABABA"}
+\end{table}
+
+\begin{center}
+	\begin{singlespace}
+	\begin{minipage}{0.75\linewidth}
+	\begin{algorithm}[H]
+		$length \leftarrow 0$ \;
+		$LPS \leftarrow m * [0]$ \;
+		\While{$i < m$}{
+			\If{$P[i] == P[m]$}{
+				$length \leftarrow length + 1$\;
+				$LPS[i] \leftarrow 0$\;
+				$i \leftarrow i + 1$\;
+			}
+			\ElseIf{$length \neq 0$}{
+				$length \leftarrow LPS[length - 1]$\;
+			}
+			\Else{
+				$LPS[i] \leftarrow 0$\;
+				$i \leftarrow i + 1$\;
+			}
+		}
+		\textbf{return} $LPS$
+		\caption{CalculateLPSArray}
+	\end{algorithm}
+	\end{minipage}
+	\end{singlespace}
+	\end{center}
 
 \subsection{Rabin-Karp Algorithm}
 
@@ -68,95 +195,14 @@ To examine this subject, three popular string matching algorithms were programme
 
 \section{References}
 
-Maecenas consectetur metus at tellus finibus condimentum. Proin arcu lectus, ultrices non tincidunt et, tincidunt ut quam. Integer luctus posuere est, non maximus ante dignissim quis. Nunc a cursus erat. Curabitur suscipit nibh in tincidunt sagittis. Nam malesuada vestibulum quam id gravida. Proin ut dapibus velit. Vestibulum eget quam quis ipsum semper convallis. Duis consectetur nibh ac diam dignissim, id condimentum enim dictum. Nam aliquet ligula eu magna pellentesque, nec sagittis leo lobortis. Aenean tincidunt dignissim egestas. Morbi efficitur risus ante, id tincidunt odio pulvinar vitae.
 
-Curabitur tempus hendrerit nulla. Donec faucibus lobortis nibh pharetra sagittis. Sed magna sem, posuere eget sem vitae, finibus consequat libero. Cras aliquet sagittis erat ut semper. Aenean vel enim ipsum. Fusce ut felis at eros sagittis bibendum mollis lobortis libero. Donec laoreet nisl vel risus lacinia elementum non nec lacus. Nullam luctus, nulla volutpat ultricies ultrices, quam massa placerat augue, ut fringilla urna lectus nec nibh. Vestibulum efficitur condimentum orci a semper. Pellentesque ut metus pretium lacus maximus semper. Sed tellus augue, consectetur rhoncus eleifend vel, imperdiet nec turpis. Nulla ligula ante, malesuada quis orci a, ultricies blandit elit.
 
-% Numbered question, with subquestions in an enumerate environment
-\begin{question}
-	Quisque ullamcorper placerat ipsum. Cras nibh. Morbi vel justo vitae lacus tincidunt ultrices. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
 
-	% Subquestions numbered with letters
-	\begin{enumerate}[(a)]
-		\item Do this.
-		\item Do that.
-		\item Do something else.
-	\end{enumerate}
-\end{question}
-	
-%------------------------------------------------
-
-\subsection{Algorithmic issues}
-
-In malesuada ullamcorper urna, sed dapibus diam sollicitudin non. Donec elit odio, accumsan ac nisl a, tempor imperdiet eros. Donec porta tortor eu risus consequat, a pharetra tortor tristique. Morbi sit amet laoreet erat. Morbi et luctus diam, quis porta ipsum. Quisque libero dolor, suscipit id facilisis eget, sodales volutpat dolor. Nullam vulputate interdum aliquam. Mauris id convallis erat, ut vehicula neque. Sed auctor nibh et elit fringilla, nec ultricies dui sollicitudin. Vestibulum vestibulum luctus metus venenatis facilisis. Suspendisse iaculis augue at vehicula ornare. Sed vel eros ut velit fermentum porttitor sed sed massa. Fusce venenatis, metus a rutrum sagittis, enim ex maximus velit, id semper nisi velit eu purus.
-
-\begin{center}
-	\begin{minipage}{0.5\linewidth} % Adjust the minipage width to accomodate for the length of algorithm lines
-		\begin{algorithm}[H]
-			\KwIn{$(a, b)$, two floating-point numbers}  % Algorithm inputs
-			\KwResult{$(c, d)$, such that $a+b = c + d$} % Algorithm outputs/results
-			\medskip
-			\If{$\vert b\vert > \vert a\vert$}{
-				exchange $a$ and $b$ \;
-			}
-			$c \leftarrow a + b$ \;
-			$z \leftarrow c - a$ \;
-			$d \leftarrow b - z$ \;
-			{\bf return} $(c,d)$ \;
-			\caption{\texttt{FastTwoSum}} % Algorithm name
-			\label{alg:fastTwoSum}   % optional label to refer to
-		\end{algorithm}
-	\end{minipage}
-\end{center}
-
-Fusce varius orci ac magna dapibus porttitor. In tempor leo a neque bibendum sollicitudin. Nulla pretium fermentum nisi, eget sodales magna facilisis eu. Praesent aliquet nulla ut bibendum lacinia. Donec vel mauris vulputate, commodo ligula ut, egestas orci. Suspendisse commodo odio sed hendrerit lobortis. Donec finibus eros erat, vel ornare enim mattis et.
 
 % Numbered question, with an optional title
 \begin{question}[\itshape (with optional title)]
 	In congue risus leo, in gravida enim viverra id. Donec eros mauris, bibendum vel dui at, tempor commodo augue. In vel lobortis lacus. Nam ornare ullamcorper mauris vel molestie. Maecenas vehicula ornare turpis, vitae fringilla orci consectetur vel. Nam pulvinar justo nec neque egestas tristique. Donec ac dolor at libero congue varius sed vitae lectus. Donec et tristique nulla, sit amet scelerisque orci. Maecenas a vestibulum lectus, vitae gravida nulla. Proin eget volutpat orci. Morbi eu aliquet turpis. Vivamus molestie urna quis tempor tristique. Proin hendrerit sem nec tempor sollicitudin.
 \end{question}
 
-Mauris interdum porttitor fringilla. Proin tincidunt sodales leo at ornare. Donec tempus magna non mauris gravida luctus. Cras vitae arcu vitae mauris eleifend scelerisque. Nam sem sapien, vulputate nec felis eu, blandit convallis risus. Pellentesque sollicitudin venenatis tincidunt. In et ipsum libero. Nullam tempor ligula a massa convallis pellentesque.
-
-%----------------------------------------------------------------------------------------
-%	PROBLEM 2
-%----------------------------------------------------------------------------------------
-
-\section{Implementation}
-
-Proin lobortis efficitur dictum. Pellentesque vitae pharetra eros, quis dignissim magna. Sed tellus leo, semper non vestibulum vel, tincidunt eu mi. Aenean pretium ut velit sed facilisis. Ut placerat urna facilisis dolor suscipit vehicula. Ut ut auctor nunc. Nulla non massa eros. Proin rhoncus arcu odio, eu lobortis metus sollicitudin eu. Duis maximus ex dui, id bibendum diam dignissim id. Aliquam quis lorem lorem. Phasellus sagittis aliquet dolor, vulputate cursus dolor convallis vel. Suspendisse eu tellus feugiat, bibendum lectus quis, fermentum nunc. Nunc euismod condimentum magna nec bibendum. Curabitur elementum nibh eu sem cursus, eu aliquam leo rutrum. Sed bibendum augue sit amet pharetra ullamcorper. Aenean congue sit amet tortor vitae feugiat.
-
-In congue risus leo, in gravida enim viverra id. Donec eros mauris, bibendum vel dui at, tempor commodo augue. In vel lobortis lacus. Nam ornare ullamcorper mauris vel molestie. Maecenas vehicula ornare turpis, vitae fringilla orci consectetur vel. Nam pulvinar justo nec neque egestas tristique. Donec ac dolor at libero congue varius sed vitae lectus. Donec et tristique nulla, sit amet scelerisque orci. Maecenas a vestibulum lectus, vitae gravida nulla. Proin eget volutpat orci. Morbi eu aliquet turpis. Vivamus molestie urna quis tempor tristique. Proin hendrerit sem nec tempor sollicitudin.
-
-% File contents
-\begin{file}[hello.py]
-\begin{lstlisting}[language=Python]
-#! /usr/bin/python
-
-import sys
-sys.stdout.write("Hello World!\n")
-\end{lstlisting}
-\end{file}
-
-Fusce eleifend porttitor arcu, id accumsan elit pharetra eget. Mauris luctus velit sit amet est sodales rhoncus. Donec cursus suscipit justo, sed tristique ipsum fermentum nec. Ut tortor ex, ullamcorper varius congue in, efficitur a tellus. Vivamus ut rutrum nisi. Phasellus sit amet enim efficitur, aliquam nulla id, lacinia mauris. Quisque viverra libero ac magna maximus efficitur. Interdum et malesuada fames ac ante ipsum primis in faucibus. Vestibulum mollis eros in tellus fermentum, vitae tristique justo finibus. Sed quis vehicula nibh. Etiam nulla justo, pellentesque id sapien at, semper aliquam arcu. Integer at commodo arcu. Quisque dapibus ut lacus eget vulputate.
-
-% Command-line "screenshot"
-\begin{commandline}
-	\begin{verbatim}
-		$ chmod +x hello.py
-		$ ./hello.py
-
-		Hello World!
-	\end{verbatim}
-\end{commandline}
-
-Vestibulum sodales orci a nisi interdum tristique. In dictum vehicula dui, eget bibendum purus elementum eu. Pellentesque lobortis mattis mauris, non feugiat dolor vulputate a. Cras porttitor dapibus lacus at pulvinar. Praesent eu nunc et libero porttitor malesuada tempus quis massa. Aenean cursus ipsum a velit ultricies sagittis. Sed non leo ullamcorper, suscipit massa ut, pulvinar erat. Aliquam erat volutpat. Nulla non lacus vitae mi placerat tincidunt et ac diam. Aliquam tincidunt augue sem, ut vestibulum est volutpat eget. Suspendisse potenti. Integer condimentum, risus nec maximus elementum, lacus purus porta arcu, at ultrices diam nisl eget urna. Curabitur sollicitudin diam quis sollicitudin varius. Ut porta erat ornare laoreet euismod. In tincidunt purus dui, nec egestas dui convallis non. In vestibulum ipsum in dictum scelerisque.
-
-% Warning text, with a custom title
-\begin{warn}[Notice:]
-  In congue risus leo, in gravida enim viverra id. Donec eros mauris, bibendum vel dui at, tempor commodo augue. In vel lobortis lacus. Nam ornare ullamcorper mauris vel molestie. Maecenas vehicula ornare turpis, vitae fringilla orci consectetur vel. Nam pulvinar justo nec neque egestas tristique. Donec ac dolor at libero congue varius sed vitae lectus. Donec et tristique nulla, sit amet scelerisque orci. Maecenas a vestibulum lectus, vitae gravida nulla. Proin eget volutpat orci. Morbi eu aliquet turpis. Vivamus molestie urna quis tempor tristique. Proin hendrerit sem nec tempor sollicitudin.
-\end{warn}
-
-%----------------------------------------------------------------------------------------
 
 \end{document}
