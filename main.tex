@@ -103,6 +103,9 @@ is expected to be $O(n \cdot m)$ [10]. The algorithm is better expressed in pseu
 \begin{algorithm}[H]
 	$n \leftarrow T.length()$ \;
 	$m \leftarrow P.length()$ \;
+
+	\bigskip
+
 	\For{$i \leftarrow 0$ \bf{to} $n-m$}{
 		\While{$j < m$ \bf{and} $P[j] == T[i+j]$}{
 			$j \leftarrow j + 1$}
@@ -156,6 +159,9 @@ an array of 0s of length $m$. For demonstration purposes, $P$ will equal "$ABABA
 \begin{algorithm}[H]
 	$length \leftarrow 0$ \;
 	$LPS \leftarrow m * [0]$ \;
+
+	\bigskip
+
 	\While{$i < m$}{
 		\If{$P[i] == P[m]$}{
 			$length \leftarrow length + 1$\;
@@ -170,6 +176,7 @@ an array of 0s of length $m$. For demonstration purposes, $P$ will equal "$ABABA
 			$i \leftarrow i + 1$\;
 		}
 	}
+
 	\textbf{return} $LPS$
 	\caption{CalculateLPSArray}
 \end{algorithm}
@@ -191,33 +198,133 @@ below:
 \begin{singlespace}
 \begin{minipage}{0.75\linewidth}
 \begin{algorithm}[H]
-	$length \leftarrow 0$ \;
-	$LPS \leftarrow m * [0]$ \;
-	\While{$i < m$}{
-		\If{$P[i] == P[m]$}{
-			$length \leftarrow length + 1$\;
-			$LPS[i] \leftarrow 0$\;
+	$n \leftarrow T.length()$ \;
+	$m \leftarrow P.length()$ \;
+	$LPS \leftarrow CalculateLPSArray(P)$ \;
+	$i \leftarrow 0$ \;
+	$j \leftarrow 0$ \;
+
+	\bigskip
+
+	\While{$j < n$}{
+		\If{$P[i] == T[j]$}{
 			$i \leftarrow i + 1$\;
+			$j \leftarrow j + 1$\;
 		}
-		\ElseIf{$length \neq 0$}{
-			$length \leftarrow LPS[length - 1]$\;
+		\If{$i == m$}{
+			\textbf{output} "Pattern found at index" $+ (j-i)$\;
+			$i \leftarrow LPS[i-1]$\;
 		}
-		\Else{
-			$LPS[i] \leftarrow 0$\;
-			$i \leftarrow i + 1$\;
-		}
-	}
-	\textbf{return} $LPS$
-	\caption{CalculateLPSArray}
+		\ElseIf{$j < n$ \textbf{and} $P[i] \neq T[j]$}{
+			\If{$i \neq 0$}{
+				$i \leftarrow LPS[i - 1]$\;}
+			\Else{
+				$j \leftarrow j + 1$\;
+			}
+	}}
+	\caption{KMP Match}
 \end{algorithm}
 \end{minipage}
 \end{singlespace}
 \end{center}
 
+By skipping the unecessary character comparisons, the algorithm proves to be much
+more efficient than the Naive approach. This is seen in its worst-case time complexity,
+which is $O(n + m)$ (best-case time complexity remains the same). As for the time complexities in the pre-processing and matching phases, they are $O(m)$ and $O(n)$ respectively
+
 \subsection{Rabin-Karp Algorithm}
 
+[12] The most similar out of the two to the Naive approach, the Rabin-Karp algorithm
+has a similar process of checking every substring for a match. Unlike the Naive approach
+however, this algorithm compares “hash values”. These are calculated using rolling hash
+functions, which allow for the removal and introduction of characters to the calculation,
+eliminating the need to recalculate the value entirely from scratch. To perform the hashing
+process on a substring, the following steps are carried out:
+
+\begin{question}[\bf{Rolling Hash Function}]
+\begin{enumerate}
+	\item The base $(b)$ and modulus $(p)$ values are chosen (usually prime numbers).
+	\item A hash value is initialised to 0 and the initial hash value of $P$ calculated (for each character in $P$, its contribution is added to the hash value as $c \cdot (b^{m-i-1}) \% p$.
+	\item The hash value for the first substring of length $m$ in $T$ is calculated.
+	\item Everytime $j$ is incremented, the contribution of the leftmost character is removed, the contribution of the rightmost character added.
+	\item Compare the text and pattern matches each time; if they match then it is a \textbf{potential match} (rolling function outputs can be the same for different inputs). To verify the match, a character match is performed.
+	
+\end{enumerate}
+\end{question}
+
+The time complexity for the pre-processing phase (calculating $P$'s hash value) is $O(m)$.
+As for the time complexities in the matching phase, they are $O(m \cdot n)$ for the worst case
+scenario and $O(n + m)$ for the expected case. Although this algorithm maintains the
+simplicity of the Naive algorithm all the while improving its efficiency, it has a disadvantage that, depending on the specific $T$ case, may impact its efficiency -- a spurious
+hit. This refers to the case where a hash value match is made between $P$ and $T$ but the
+characters do not match, increasing the time complexity. This can however be minimized
+by implementing a robust hash function.
+
+The pseudocode for the algorithm is presented here below:
+
+\begin{center}
+\begin{singlespace}
+\begin{minipage}{0.75\linewidth}
+\begin{algorithm}[H]
+	$n \leftarrow T.length()$ \;
+	$m \leftarrow P.length()$ \;
+	$h \leftarrow 1$ \;
+	$hashT \leftarrow 0$ \;
+	$hashP \leftarrow 0$ \;
+
+	\bigskip
+
+	\For{$i \leftarrow 1$ \textbf{to} $m-1$}{
+		$h \leftarrow (h \cdot b) \% p$ \;
+	}
+
+	\bigskip
+
+	\For{$i \leftarrow 0$ \textbf{to} $m-1$}{
+		$hashP \leftarrow (b \cdot hashP + P[i]) \% p$ \;
+		$hashT \leftarrow (b \cdot hashT + T[i]) \% p$ \;
+	}
+
+	\bigskip
+
+	\For{$i \leftarrow 0$ \textbf{to} $n - m$}{
+		$match \leftarrow TRUE$ \;
+
+		\For{$j \leftarrow 0$ \textbf{to} $m - 1$}{
+			\If{$P[j] \neq T[i + j]$}{
+				$match \leftarrow FALSE$ \;
+			}
+		}
+
+		\If{$match == TRUE$}{}
+			\textbf{output} "Pattern found at index " $+ i$\;
+		\If{$i < n - m$}{
+			$hashT \leftarrow (b \cdot hashT + T[i]) + T[i + m] \% p$ \;
+			\If{$hashT < 0$}{
+				$hashT \leftarrow hashT + p$ \;
+			}
+		}
+	}
+\caption{Rabin Karp}
+\end{algorithm}
+\end{minipage}
+\end{singlespace}
+\end{center}
 
 \section{Experimental Methodology}
+
+In order to plan and carry out a methodology that will directly address the research
+question, the question must first be decomposed into specific key terms. These will aid
+in the decisions of variables, tools, and process.
+To re-iterate the question:
+\textbf{“How do different string matching algorithms perform across various application domains, and what factors contribute to their varying effectiveness?”}
+
+This can be broken down into three parts: measuring the performance of the mentioned
+string algorithms, applying these to different domains, and analyzing the results by making
+links back to the theory in order to understand the reasons behind their varying efficiency.
+The former two can be examined as part of the methodology, whereas the latter will be
+used as part of the analysis and conclusion.
+
 
 \subsection{Research Question Decomposition}
 
@@ -236,10 +343,7 @@ below:
 
 
 
-% Numbered question, with an optional title
-\begin{question}[\itshape (with optional title)]
-	In congue risus leo, in gravida enim viverra id. Donec eros mauris, bibendum vel dui at, tempor commodo augue. In vel lobortis lacus. Nam ornare ullamcorper mauris vel molestie. Maecenas vehicula ornare turpis, vitae fringilla orci consectetur vel. Nam pulvinar justo nec neque egestas tristique. Donec ac dolor at libero congue varius sed vitae lectus. Donec et tristique nulla, sit amet scelerisque orci. Maecenas a vestibulum lectus, vitae gravida nulla. Proin eget volutpat orci. Morbi eu aliquet turpis. Vivamus molestie urna quis tempor tristique. Proin hendrerit sem nec tempor sollicitudin.
-\end{question}
+
 
 
 \end{document}
