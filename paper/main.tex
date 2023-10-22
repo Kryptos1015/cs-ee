@@ -36,11 +36,15 @@
 
 The impacts and applications of string matching algorithms extend far beyond their immediate textual applications; its quotidian use in domains such as bioinformatics, web crawling and security systems make it a pertinent area of study within computer science. There is also constant research being carried out to identify more efficient algorithms, and find ways in which to combine them with other disciplines to carry out certain tasks.
 
-For instance, multiple studies have been recently published performing various comparative analyses of new string matching algorithms [5], and their applicability to a wide range of domains such as biological sequences [6], quantum computing [7], and instrusion detection systems [8]. These findings indicate the modern-day relevance and applicability of string matching algorithms and demonstrate its worthiness as a subject of investigation.
+For instance, multiple studies have been recently published performing various comparative analyses of new string matching algorithms [4], and their applicability to a wide range of domains such as biological sequences [5], quantum computing [6], and instrusion detection systems [7]. These findings indicate the modern-day relevance and applicability of string matching algorithms and demonstrate its worthiness as a subject of investigation.
 
-Similarly, this paper seeks to adopt an investigative style by examining \textbf{how different string matching algorithms perform across various application domains, and the factors that contribute to their varying effectiveness}. The choice of this research question is both relevant and justifiable, reflecting the persistent demand for evaluating and optimizing string matching algorithms across a range of applications.
+Similarly, this paper seeks to adopt an investigative style by examining \textbf{how different string matching algorithms perform across various application domains, and the factors that contribute to their varying effectiveness}. 
 
-To examine this subject, three popular string matching algorithms were programmed and tested on their ability to carry out three tasks from three different domains. They are then evaluated on their efficiency, and applicability. To maintain focus on the research question, the reasoning and rationale behind all the decisions will be explained to demonstrate how they directly address the question.
+To formulate a methodology that will directly address this aim, the research question can be broken down into three parts: measuring the performance of the mentioned string algorithms, analyzing the results by making links back to the theory in order to the understand the reasons behind their varying efficiency, and linking these to different domains.
+
+To examine this subject, three popular string matching algorithms were programmed and tested on their ability to carry out three tasks from three different domains. They are then evaluated on a set of criteria to determine their efficiency and applicability. To maintain focus on the research question, the reasoning and rationale behind all the decisions will be explained to demonstrate how they directly address the question.
+
+The choice of this research question is both relevant and justifiable, reflecting the persistent demand for evaluating and optimizing string matching algorithms across a range of applications.
 
 \section{Theoretical Background} % Numbered section
 \subsection{Topic Overview}
@@ -56,7 +60,7 @@ sequence, a text ($T$). Within string matching problems, there exists two genera
 
 \begin{enumerate}
 	\item \textbf{Find occurences of a pre-defined pattern in a previously unseen dataset} \\
-	Carried out using finite automata models [4] (an idealized machine used to recognize
+	Carried out using finite automata models [2] (an idealized machine used to recognize
 	patterns in a given text; it accepts or rejects the input depending on whether the
 	pre-defined pattern occurs in the text) or through the combinatorial properties of
 	strings.
@@ -89,13 +93,13 @@ $P_{i}$ & : & For an input pattern $P$ where $0 \le i \le m - 1$\\
 
 \subsection{Naive Algorithm}
 
-[9] Also known as the “brute-force” approach, this algorithm compares the first indexes
+[8] Also known as the “brute-force” approach, this algorithm compares the first indexes
 of both $P$ and $T$. If $P_{i}$ equals $T_{j}$ then $i$ and $j$ are incremented and further compared. If
 $P_{i}$ reaches $m - 1$ then a variable containing the number of occurences of $P$ is incremented
 and $P_{i}$ is reset to $P_{i=0}$. On the other hand, if they do not match, then $P_{i}$ is reset and
 $j$ incremented. This repeats until $T_{j=m-1}$ is reached. Since there is no pre-processing
 phase, the only time complexity taken into account is during its matching phase, which
-is expected to be $O(n \cdot m)$ [10]. The algorithm is better expressed in pseudocode:
+is expected to be $O(n \cdot m)$ [2]. The algorithm is better expressed in pseudocode:
 
 \begin{center}
 \begin{singlespace}
@@ -127,7 +131,7 @@ $O(m \cdot (n - m + 1))$ number of comparisons.
 
 \subsection{Knuth-Morris-Pratt Algorithm}
 
-[10] [11] This algorithm differs from the Naive approach by implementing an LPS table
+[2] [9] This algorithm differs from the Naive approach by implementing an LPS table
 as part of the pre-processing phase. Its purpose is to keep track of the comparisons made;
 after a mismatch, it is used to calculate where to begin the next match without needing
 to reset $P$. The table is constructed by determining the largest prefix of $P$ that matches
@@ -234,7 +238,7 @@ which is $O(n + m)$ (best-case time complexity remains the same). As for the tim
 
 \subsection{Rabin-Karp Algorithm}
 
-[12] The most similar out of the two to the Naive approach, the Rabin-Karp algorithm
+[10] The most similar out of the two to the Naive approach, the Rabin-Karp algorithm
 has a similar process of checking every substring for a match. Unlike the Naive approach
 however, this algorithm compares “hash values”. These are calculated using rolling hash
 functions, which allow for the removal and introduction of characters to the calculation,
@@ -313,37 +317,59 @@ The pseudocode for the algorithm is presented here below:
 
 \section{Experimental Methodology}
 
-In order to plan and carry out a methodology that will directly address the research
-question, the question must first be decomposed into specific key terms. These will aid
-in the decisions of variables, tools, and process.
-To re-iterate the question:
-\textbf{“How do different string matching algorithms perform across various application domains, and what factors contribute to their varying effectiveness?”}
-
-This can be broken down into three parts: measuring the performance of the mentioned
-string algorithms, applying these to different domains, and analyzing the results by making
-links back to the theory in order to understand the reasons behind their varying efficiency.
-The former two can be examined as part of the methodology, whereas the latter will be
-used as part of the analysis and conclusion.
-
-
-\subsection{Research Question Decomposition}
-
 \subsection{Measuring Performance}
 
-\subsection{Application to Domains}
+To measure the detailed algorithms' performance, their mentioned pseudocode algorithms were programmed in $Python$ $3.12$. 
+Python was chosen due to it's wide array of third-party modules, two of which are used as part of the implementation: $Time$ and $Matplotlib$. 
+$Time$ is used to measure the algorithms' runtimes for each algorithm, and $Matplotlib$ is used to generate the graphical plots.
+Using their implementations, the following variables will be measured:
 
+\begin{enumerate}
+	\item \textbf{Dependent Variables} \\
+	\underline{Time (ms)} - The amount of time taken to search a pattern $P$ in a text $T$. \\
+	\underline{Number of Comparisons (pattern)} - The number of comparisons made between the pattern characters. \\
+	\underline{Number of Comparisons (text)} - The number of references made to the text (until all instances of the pattern are found).
+	\item \textbf{Control Variables} \\
+	\underline{Language} - Depending on whether the language employs a compiler or an interpetor, runtime speeds can differ. Moreover, the type of programming language (procedural, functional, etc.) can have an impact on how the code is run, further impacting runtime speed.\\
+	\underline{Pattern Length} - By controlling this factor, it is ensured that variations in number of comparisons and runtime are due to the algorithms themselves. This 
+\end{enumerate}
+
+The algorithms are then evaluated on their performance based on a set of constructed criteria:
+
+\begin{table}[!htbp]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        Criteria & Testing \\
+        \hline
+        Time complexity & A \\
+        Space complexity & B \\
+        Simplicity & A \\
+        Applicability & B \\
+        \hline
+    \end{tabular}
+    \caption{Evaluation Criteria}
+\end{table}
+
+\subsection{Application to Domains}
+Plagiarism detection, DNA sequencing, Search Engine
 
 \section{Experimental Results Analysis}
+\subsection{Advantages and Disadvantages}
 
 \section{Conclusion}
 
 \section{References}
-
-
-
-
-
-
-
-
+\begin{itemize}
+	\item [1] eswitha_reddy. (2022, November 7). Applications of string matching algorithms. GeeksforGeeks. https://www.geeksforgeeks.org/applications-of-string-matching-algorithms/ 
+	\item [2] Gimel'farb, G. (2011, May 2). String matching algorithms - auckland. String Matching Algorithm. https://www.cs.auckland.ac.nz/courses/compsci369s1c/lectures/GG-notes/CS369-StringAlgs.pdf 
+	\item [3] harendrakumar123. (2023, May 8). Introduction to pattern searching - data structure and algorithm tutorial. GeeksforGeeks. https://www.geeksforgeeks.org/introduction-to-pattern-searching-data-structure-and-algorithm-tutorial/ 
+	\item [4] Gao, M., Huang, R., Mazumder, A. R., and Li, F. (2022). Comparisons of classic and quantum string matching algorithms*. Proceedings of the 4th International Conference on Advanced Information Science and System. https://doi.org/10.1145/3573834.3574498 
+	\item [5] Muhammad Yusuf Muhammad, Mathias Fonkam, Salu George Thandekatu, Sandip Rakshit, and Rao Narasimha Vajjhala. (2023). COMPARATIVE ANALYSIS OF BIT-PARALLEL STRING PATTERN MATCHING ALGORITHMS FOR BIOLOGICAL SEQUENCES. Operational Research in Engineering Sciences: Theory and Applications, 6(1). Retrieved from https://oresta.org/menu-script/index.php/oresta/article/view/554 
+	\item [6] Lecroq, T. (2023). Optimal-Hash Exact String Matching Algorithms. arXiv preprint arXiv:2303.05799. 
+	\item [7] K Azarudeen et al 2021 J. Phys.: Conf. Ser. 1916 012007 
+	\item [8] GeeksforGeeks. (2023c, October 20). Naive algorithm for pattern searching. https://www.geeksforgeeks.org/naive-algorithm-for-pattern-searching/?ref=lbp 
+	\item [9] GeeksforGeeks. (2023a, May 4). KMP algorithm for pattern searching. https://www.geeksforgeeks.org/kmp-algorithm-for-pattern-searching/?ref=lbp 
+	\item [10] GeeksforGeeks. (2023b, September 6). Rabin-Karp algorithm for pattern searching. https://www.geeksforgeeks.org/rabin-karp-algorithm-for-pattern-searching/?ref=lbp 
+\end{itemize}
 \end{document}
