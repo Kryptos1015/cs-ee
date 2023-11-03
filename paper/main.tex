@@ -36,7 +36,7 @@
 
 The impacts and applications of string matching algorithms extend far beyond their immediate textual applications; its quotidian use in domains such as bioinformatics, web crawling and security systems make it a pertinent area of study within computer science. There is also constant research being carried out to identify more efficient algorithms, and find ways in which to combine them with other disciplines to carry out certain tasks.
 
-For instance, multiple studies have been recently published performing various comparative analyses of new string matching algorithms [4], and their applicability to a wide range of domains such as biological sequences [5], quantum computing [6], and instrusion detection systems [7]. These findings indicate the modern-day relevance and applicability of string matching algorithms and demonstrate its worthiness as a subject of investigation.
+For instance, multiple studies have been recently published performing various comparative analyses of new string matching algorithms \parencite{4}, and their applicability to a wide range of domains such as biological sequences \parencite{5}, quantum computing \parencite{6}, and instrusion detection systems \parencite{7}. These findings indicate the modern-day relevance and applicability of string matching algorithms and demonstrate its worthiness as a subject of investigation.
 
 Similarly, this paper seeks to adopt an investigative style by examining \textbf{how different string matching algorithms perform across various application domains, and the factors that contribute to their varying effectiveness}. 
 
@@ -48,19 +48,18 @@ The choice of this research question is both relevant and justifiable, reflectin
 
 \section{Theoretical Background} % Numbered section
 \subsection{Topic Overview}
-String matching algorithms (often used interchangeably with string or pattern searching
+\parencite{3} String matching algorithms (often used interchangeably with string or pattern searching
 algorithms) are a subset of string algorithms. The term is composed of three parts:
 “string”, “matching”, and “algorithm”. Strings refer to an abstract data type consisting
-1
 of a sequence of characters. Matching relates to it's function to identify specific patterns
 within a larger dataset that match a criteria. As for algorithms, these can be defined as a set of instructions designed to carry out a function. These algorithms take in two
 inputs: a pattern ($P$), which is a sequence of characters being searched for within a larger
 sequence, a text ($T$). Within string matching problems, there exists two general variants
-[2]:
+\parencite{2}:
 
 \begin{enumerate}
 	\item \textbf{Find occurences of a pre-defined pattern in a previously unseen dataset} \\
-	Carried out using finite automata models [2] (an idealized machine used to recognize
+	Carried out using finite automata models \parencite{2} (an idealized machine used to recognize
 	patterns in a given text; it accepts or rejects the input depending on whether the
 	pre-defined pattern occurs in the text) or through the combinatorial properties of
 	strings.
@@ -68,7 +67,7 @@ sequence, a text ($T$). Within string matching problems, there exists two genera
 	Carried out using finite automata and binary trees.
 \end{enumerate}
 
-Linking into the mentioned problem variants, these algorithms can be further classified into two categories [1]: exact, and approximate string matching algorithms. As
+Linking into the mentioned problem variants, these algorithms can be further classified into two categories \parencite{1}: exact, and approximate string matching algorithms. As
 its name suggests, the former refers to finding occurences of a pattern that match it to
 the character, whereas the latter allows for some variation or deviation. For the purpose
 of this investigation, the first problem variant, as well as an exact-string matching approach was chosen for all the algorithms, both for simplicity and control. Three exact
@@ -93,13 +92,13 @@ $P_{i}$ & : & For an input pattern $P$ where $0 \le i \le m - 1$\\
 
 \subsection{Naive Algorithm}
 
-[8] Also known as the “brute-force” approach, this algorithm compares the first indexes
+\parencite{8} Also known as the “brute-force” approach, this algorithm compares the first indexes
 of both $P$ and $T$. If $P_{i}$ equals $T_{j}$ then $i$ and $j$ are incremented and further compared. If
 $P_{i}$ reaches $m - 1$ then a variable containing the number of occurences of $P$ is incremented
 and $P_{i}$ is reset to $P_{i=0}$. On the other hand, if they do not match, then $P_{i}$ is reset and
 $j$ incremented. This repeats until $T_{j=m-1}$ is reached. Since there is no pre-processing
 phase, the only time complexity taken into account is during its matching phase, which
-is expected to be $O(n \cdot m)$ [2]. The algorithm is better expressed in pseudocode:
+is expected to be $O(n \cdot m)$ \parencite{2}. The algorithm is better expressed in pseudocode:
 
 \begin{center}
 \begin{singlespace}
@@ -131,7 +130,7 @@ $O(m \cdot (n - m + 1))$ number of comparisons.
 
 \subsection{Knuth-Morris-Pratt Algorithm}
 
-[2] [9] This algorithm differs from the Naive approach by implementing an LPS table
+\parencite{2} \parencite{9} This algorithm differs from the Naive approach by implementing an LPS table
 as part of the pre-processing phase. Its purpose is to keep track of the comparisons made;
 after a mismatch, it is used to calculate where to begin the next match without needing
 to reset $P$. The table is constructed by determining the largest prefix of $P$ that matches
@@ -238,7 +237,7 @@ which is $O(n + m)$ (best-case time complexity remains the same). As for the tim
 
 \subsection{Rabin-Karp Algorithm}
 
-[10] The most similar out of the two to the Naive approach, the Rabin-Karp algorithm
+\parencite{10} The most similar out of the two to the Naive approach, the Rabin-Karp algorithm
 has a similar process of checking every substring for a match. Unlike the Naive approach
 however, this algorithm compares “hash values”. These are calculated using rolling hash
 functions, which allow for the removal and introduction of characters to the calculation,
@@ -248,7 +247,7 @@ process on a substring, the following steps are carried out:
 \begin{question}[\bf{Rolling Hash Function}]
 \begin{enumerate}
 	\item The base $(b)$ and modulus $(p)$ values are chosen (usually prime numbers).
-	\item A hash value is initialised to 0 and the initial hash value of $P$ calculated (for each character in $P$, its contribution is added to the hash value as $c \cdot (b^{m-i-1}) \% p$.
+	\item A hash value is initialised to 0 and the initial hash value of $P$ calculated (for each character in $P$, its contribution is added to the hash value as $c \cdot (b^{m-i-1}) \% p$).
 	\item The hash value for the first substring of length $m$ in $T$ is calculated.
 	\item Everytime $j$ is incremented, the contribution of the leftmost character is removed, the contribution of the rightmost character added.
 	\item Compare the text and pattern matches each time; if they match then it is a \textbf{potential match} (rolling function outputs can be the same for different inputs). To verify the match, a character match is performed.
@@ -359,7 +358,5 @@ Plagiarism detection, DNA sequencing, Search Engine
 
 \section{Conclusion}
 
-\bibliographystyle{plain}
-reference style
-\bibliography{references}
+\printbibliography
 \end{document}
