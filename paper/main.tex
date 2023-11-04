@@ -14,7 +14,7 @@
 
 \author{\textbf{Research Question -} How do different string \and matching algorithms perform across various application domains, \and and what factors contribute to their varying effectiveness?} % Author name and email address
 
-\date{\textbf{Words}: not enough} % University, school and/or department name(s) and a date
+\date{\textbf{Words}: 3514} % University, school and/or department name(s) and a date
 
 %----------------------------------------------------------------------------------------
 
@@ -352,8 +352,8 @@ To aid with comprehension, the rolling hash function used to calculate hash valu
 \subsection{Measuring Performance}
 
 To measure the detailed algorithms' performance, their mentioned pseudocode algorithms were programmed in $Python$ $3.12$. 
-Python was chosen due to it's wide array of third-party modules, three of which are used as part of the implementation: $time$, $matplotlib$ and $cProfile$. 
-$time$ is used to measure the algorithms' runtimes for each algorithm, $matplotlib$ is used to generate the graphical plots, and $cProfile$ is used to calculate the time and space-complexities of the programs.
+Python was chosen due to it's wide array of third-party modules, three of which are used as part of the implementation: $timeit$, $matplotlib$, and $random$. 
+$timeit$ is used to measure the algorithms' runtimes for each algorithm, $matplotlib$ is used to generate the graphical plots, and $random$ is used to generate the patterns.
 An experimental methodology was chosen as their is limited secondary data available due to the high specificity of the task. Furthermore, this methodology provides increased control over variable manipulation.
 Using their implementations, the following variables will be measured:
 
@@ -365,7 +365,8 @@ Using their implementations, the following variables will be measured:
 	\underline{Total number of comparisons with unmatching characters} - The total number of references made to the text for characters that do not match (until all instances of the pattern are found).
 	\item \textbf{Control Variables} \\
 	\underline{Language} - Depending on whether the language employs a compiler or an interpetor, runtime speeds can differ. Moreover, the type of programming language (procedural, functional, etc.) can have an impact on how the code is run, further impacting runtime speed.\\
-	\underline{Pattern} - More specifically pattern length and occurrence within the text. By controlling this factor, it is ensured that variations in number of comparisons and runtime are due to the algorithms themselves. 
+	\underline{Pattern} - More specifically pattern length and occurrence within the text. By controlling this factor, it is ensured that variations in number of comparisons and runtime are due to the algorithms themselves. \\
+	\underline{Prime Number} - An additional input is required for Rabin-Karp's algorithm - a prime number (q). For all trials q will equal to 101 to limit its' effect on the results.
 \end{enumerate}
 
 The algorithms are then evaluated on their performance based on a set of constructed criteria:
@@ -376,8 +377,8 @@ The algorithms are then evaluated on their performance based on a set of constru
         \hline
         \textbf{Criteria} & \textbf{Testing} \\
         \hline
-        Time complexity & Using the $Python$ $cProfile$ library. \\[0.25cm]
-        Space complexity & Using the $Python$ $memory\_profiler$ library. \\[0.25cm]
+        Time complexity & Analyzing program structure. \\[0.25cm]
+        Space complexity & Analyzing program structure. \\[0.25cm]
         Simplicity & Subjective qualitative judgement. \\[0.25cm]
         Applicability & More specifically \textbf{pattern length} and \textbf{occurrence} within the text. By controlling this factor, it is ensured that variations in number of comparisons and runtime are due to the algorithms themselves. \\
         \hline
@@ -388,10 +389,230 @@ The algorithms are then evaluated on their performance based on a set of constru
 \subsection{Dataset}
 Two pieces of primary data were collected for the experiment, the text and the patterns to match. The same text (3000 character long English text) was used across tests for all three algorithms. As for the patterns, 30 were obtained (generated pseudorandomly from text) each with a length of $m$ from 1 to 20 to yield a total of 600 data points. The high data yield will allow for more reliable and justified judgements on trends to be made. The choice of 30 patterns was made as it was found to be an appropriate quantity for a text of this length. As for the 20 lengths of $m$, this was done as it would provide a wide range of results to observe a trend without compromising on runtime. To account for edge cases, one pattern not found within the text was included.
 
-\section{Experimental Results Analysis}
-\subsection{Advantages and Disadvantages}
+\subsection{Programs}
+\subsubsection{Pseudorandom Pattern Generator}
+
+\begin{singlespace}
+\begin{python}
+import random
+
+patterns = []
+
+for pattern_num in range(30):
+	for pattern_length in range(1,21):
+		random_initial_position = random.randint(0, 2999)
+		new_pattern = text[random_initial_position : random_initial_position + pattern_length]
+		patterns.append(new_pattern)
+\end{python}
+\end{singlespace}
+
+\subsubsection{Conducting Matches}
+Total and unmatching matches were calculated within the actual algorithm functions.
+
+\begin{singlespace}
+\begin{python}
+import timeit
+
+patterns = sorted(patterns, key=len)
+q = 101
+
+kmp_preprocessing_runtimes = []
+rabin_karp_preprocessing_runtimes = []
+
+naive_runtimes = []
+kmp_runtimes = []
+rabin_karp_runtimes = []
+
+total_matches_naive = []
+total_matches_kmp = []
+total_matches_rabin_karp = []
+
+unmatching_matches_naive = []
+unmatching_matches_kmp = []
+unmatching_matches_rabin_karp = []
+
+for pattern in patterns:
+	# Preprocessing runtimes
+	start = timeit.default_timer()
+	computeLPSArray(pattern, len(pattern), [0]*len(pattern))
+	stop = timeit.default_timer()
+	runtime = stop - start
+	kmp_preprocessing_runtimes.append(runtime)
+
+	start = timeit.default_timer()
+	rolling_hash(pattern)
+	stop = timeit.default_timer()
+	runtime = stop - start
+	rabin_karp_preprocessing_runtimes.append(runtime)
+
+	# Matching runtimes
+	start = timeit.default_timer()
+	kmp(pattern, text)
+	stop = timeit.default_timer()
+	runtime = stop - start
+	kmp_runtimes.append(runtime)
+
+	start = timeit.default_timer()
+	naive(pattern, text)
+	stop = timeit.default_timer()
+	runtime = stop - start
+	naive_runtimes.append(runtime)
+
+	start = timeit.default_timer()
+	rabin_karp(pattern, text, q)
+	stop = timeit.default_timer()
+	runtime = stop - start
+	kmp_runtimes.append(runtime)
+
+\end{python}
+\end{singlespace}
+
+\subsubsection{Generating Graphical Plots}
+
+Pattern length vs runtimes:
+\begin{python}
+\begin{singlespace}
+import matplotlib.pyplot as plt
+
+pattern_lengths = [len(i) for i in patterns]
+
+plt.figure(figsize=(8, 6))
+plt.scatter(pattern_lengths, naive_runtimes, marker='.', label="Naive")
+plt.scatter(pattern_lengths, rabin_karp_runtimes, marker='.', label="Rabin Karp")
+plt.scatter(pattern_lengths, kmp_runtimes, marker='.', label="KMP")
+
+plt.title('Pattern Length vs Runtimes')
+plt.xlabel('Pattern Length')
+plt.ylabel('Runtime (ms)')
+
+plt.legend()
+plt.grid()
+plt.show()
+\begin{singlespace}
+\end{python}
+
+Barchart for preprocessing runtimes:
+\begin{python}
+\begin{singlespace}
+avg_preprocessing_rabin_karp = sum(rabin_karp_preprocessing_runtimes) / 600
+avg_preprocessing_kmp = sum(kmp_preprocessing_runtimes) / 600
+
+algorithms = ['Rabin-Karp', 'KMP']
+preprocessing_runtimes = [avg_preprocessing_rabin_karp, avg_preprocessing_kmp]
+
+fig, ax = plt.subplots()
+bar_container = ax.bar(algorithms, preprocessing_runtimes, color=['y', 'g'])
+ax.set(ylabel='runtime (ms)', title='Average Preprocessing Runtimes for Rabin-Karp and KMP')
+ax.bar_label(bar_container, fmt=lambda x: f'{x}')
+\begin{singlespace}
+\end{python}
+
+Pattern length vs total number of comparisons:
+\begin{python}
+\begin{singlespace}
+plt.figure(figsize=(8, 6))
+plt.scatter(pattern_lengths, total_matches_naive, marker='.', label="Naive")
+plt.scatter(pattern_lengths, total_matches_rabin_karp, marker='.', label="Rabin Karp")
+plt.scatter(pattern_lengths, total_matches_kmp, marker='.', label="KMP")
+
+plt.title('Pattern Length vs Total Number of Comparisons')
+plt.xlabel('Pattern Length')
+plt.ylabel('Total Number of Comparisons')
+
+plt.legend()
+plt.grid()
+plt.show()
+\begin{singlespace}
+\end{python}
+
+Pattern length vs number of unmatching comparisons:
+\begin{python}
+\begin{singlespace}
+plt.figure(figsize=(8, 6))
+plt.scatter(pattern_lengths, unmatching_matches_naive, marker='.', label="Naive")
+plt.scatter(pattern_lengths, unmatching_matches_rabin_karp, marker='.', label="Rabin Karp")
+plt.scatter(pattern_lengths, unmatching_matches_kmp, marker='.', label="KMP")
+
+plt.title('Pattern Length vs Number of Unmatching Comparisons')
+plt.xlabel('Pattern Length')
+plt.ylabel('Number of Unmatching Comparisons')
+
+plt.legend()
+plt.grid()
+plt.show()
+\begin{singlespace}
+\end{python}
+
+\section{Experimental Results}
+\subsection{Graphical Presentation}
+Since the number of datapoints is too high to be presented as a table, only graphical representations will be presented.
+These allows for a more intuitive and visual view of the results which in turn aids in identifying patterns and trends.
+As demonstrated with the programs, these produced the four following graphs which are presented below in their most appropriate presentation forms:
+
+\begin{tikzpicture}
+\matrix[matrix of nodes]{
+\includegraphics[scale=0.4]{results1} & \includegraphics[scale=0.5]{results2} \\
+};
+\end{tikzpicture}
+
+\begin{tikzpicture}
+	\matrix[matrix of nodes]{
+	\includegraphics[scale=0.4]{results3} & \includegraphics[scale=0.4]{results4} \\
+	};
+\end{tikzpicture}
+
+Each of the graphs above (except the barchart) depict the three algorithms' performance based on the examined dependent variables.
+The plots are depicted as scatter plots as no observable trend was yet inferred. It should also be noticed that their is no third bar to the barchart as the Naive algorithm does not have a preprocessing stage.
+
+\subsection{Data Analysis}
+This section will be structured by algorithm; in each sub-section, the algorithm's performance depicted on each of the four plots will be examined, as well as its trend and how it can be explained.
+Afterwards, it will be judged against the criteria and be considered with the examined performance to make an overall judgement that will be applied to the three domains: DNA sequencing, plagiarism detection and search engines.
+
+\subsubsection{Naive Algorithm}
+
+Firstly, it should be noticed across the runtimes that all three algorithms seem to spike in runtime around the 7.5 length region. This may be an anomaly that might have occurred due to the specific characteristic of that particular pseudorandomly generated pattern. Out of the three, the Naive algorithm performed the best, with the lowest average runtime. Considering the simplicity of it, this performance is unexpected, and might be attributed to a the dataset - this can be examined further by using a wider set of data to confirm its unusual performance. This unexpected trend continues throughout the third plot, with it having an average total number of comparisons lying close to 3000, which remains stable throughout, demonstrating a linear trend with a gradient of 0. In the number of unmatching comparisons, it performs marginally better than KMP, however in comparison to Rabin Karp it performs much worse, and this can be attributed to its brute force method.
+
+In comparison with the criteria, its time and space complexity are $O(n-m+1)$ and $O(1)$ respectively. This will be put into perspective with the other algorithms at the end of the analyses. Its simplicity out of the three is already known to be the most. As for its application to domains, it was demonstrated to perform well with smaller datasets, however the areas of applications generally concern themselves with massive databases, hence it would not be appropriate to use this algorithm on any of these applications.
+
+\subsubsection{KMP Algorithm}
+
+For the matching runtimes, KMP is relatively in the middle compared to the two others, with its trend following the same similar spikes. Its preprocessing time did not follow the same trend, with it performing 52.5\% worse than Rabin Karp. Its total number of comparisons was also significantly higher than the other algorithms, sitting at an average close to 6000. The final plot also depicts the same trend, with its average number of unmatching comparisons being marginally above 3000. These results can be explained in the opposite way to Naive - KMP’s performance improves in comparison to other algorithms as the pattern lengths increase, however with small datasets it is not the most efficient.
+
+This is further justified in its time and space complexities which are both $O(m)$ for the preprocessing stage, and $O(n)$ with $O(1)$ for the matching stages. Its simplicity can be examined in two areas: the LPS table and the matching. The LPS table is relatively understandable and can be easily visualised. The latter however is more complicated, as it is more difficult to imagine how the LPS table fits onto the text to skip comparisons. Its notable characteristic of the LPS table, aswell as its suggested improved performance with large datasets renders it a more appropriate method to use with the mentioned domains.
+
+\subsubsection{Rabin Karp Algorithm}
+
+For this last algorithm, it is first seen that it spends the most amount of time in the matching stage, with it having the worst runtime. Its average preprocessing runtime is much improved in comparison to KMP’s and its matching one, which can be attributed to the low time cost of the hashing function. In the last two plots, it can be seen to excel in terms of the number comparisons. The average total lies around 3000 which is close to Naive, and it has a negligible number of unmatching comparisons, which is the most ideal.
+
+Overall, Rabin Karp represents the ideal compromise between performance and the other evaluation criteria. It has a time and space complexity of $O(m)$ and $O(1)$ in the preprocessing stage, and an average of $O(m+n)$ and $O(1)$ in the matching stage. As was demonstrated, it works well with smaller datasets, and its algorithm design suggests it would be the same with larger ones. The only realy difficulty with its comprehension is the hash function, however this can be visualised for better understanding. Its performance however may vary depending on characteristics of text, which will vary the number of spurious hits obtained. However, the general results demonstrate stability, going in hand with reliability. This links to the domains, as its demonstrated characteristics are ideal for applications areas of this genre.
 
 \section{Conclusion}
+
+Linking the examined information together, the evaluated criteria for each algorithm is presented here below:
+\pagebreak
+\begin{table}[!htbp]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{Algorithm} & \textbf{Naive} & \textbf{KMP} & \textbf{Rabin Karp} \\
+        \hline
+        \textbf{Preprocessing Time Complexity} & N/A & $O(m)$ & $O(m)$ \\[0.25cm]
+		\textbf{Preprocessing Space Complexity} & N/A & $O(m)$ & $O(1)$ \\[0.25cm]
+        \textbf{Matching Time Complexity} & $O(n-m+1)$ & $O(n)$ & $O(m+n)$\\[0.25cm]
+        \textbf{Matching Space Complexity} & $O(1)$ & $O(1)$ & $O(1)$\\[0.25cm]
+        \textbf{Simplicity} & 3 & 2 & 2 \\[0.25cm]
+        \textbf{Applicability} & 1 & 2 & 3 \\[0.25cm]
+        \hline
+    \end{tabular}
+    \caption{Evaluated Criteria}
+\end{table}
+
+Overall, taking into consideration all the criteria points, Rabin Karp is the best performer across all these factors, followed by KMP and Naive. This directly addresses and answers the research question, as various tests were conducted on the algorithms to determine performance, the obtained results were graphed and analysed by linking back to the theory to examine the underlying factors for their varying performances. Finally, these were linked to the three domains, to understand how and whether they should be applied to these areas.
+
+\section{Further Research Opportunities}
+One research opportunity concerns the q variable (prime number) that was controlled in the experimental methodology. 
+It's exact influence on the results was not determined, so a suggestion for a further investigation would be exploring how varying the magnitude of q affects the 4 dependent variables.
+Another research opportunity would be investigating more string matching algorithms and evaluating them, as having a broader view of a wider variety of algorithms can help in making better judgements as to which should be chosen for which specific purpose or domain.
 
 \printbibliography
 \end{document}
