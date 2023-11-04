@@ -19,6 +19,17 @@
 
 \refsection{0}
   \datalist[entry]{nty/global//global/global}
+    \entry{11}{misc}{}
+      \field{sortinit}{}
+      \field{sortinithash}{495dc9894017a8b12cafa9c619d10c0c}
+      \field{journaltitle}{www.javatpoint.com}
+      \verb{urlraw}
+      \verb https://www.javatpoint.com/daa-naive-string-matching-algorithm
+      \endverb
+      \verb{url}
+      \verb https://www.javatpoint.com/daa-naive-string-matching-algorithm
+      \endverb
+    \endentry
     \entry{7}{article}{}
       \name{author}{4}{}{%
         {{hash=11320ea2b2bfca85344ff398f471c730}{%
@@ -309,6 +320,38 @@
       \verb 2303.05799
       \endverb
     \endentry
+    \entry{12}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=0cd44a4ae2c12947f8283d276b166652}{%
+           family={Lee},
+           familyi={L\bibinitperiod},
+           given={Claire},
+           giveni={C\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Medium}%
+      }
+      \strng{namehash}{0cd44a4ae2c12947f8283d276b166652}
+      \strng{fullhash}{0cd44a4ae2c12947f8283d276b166652}
+      \strng{bibnamehash}{0cd44a4ae2c12947f8283d276b166652}
+      \strng{authorbibnamehash}{0cd44a4ae2c12947f8283d276b166652}
+      \strng{authornamehash}{0cd44a4ae2c12947f8283d276b166652}
+      \strng{authorfullhash}{0cd44a4ae2c12947f8283d276b166652}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Medium}
+      \field{month}{10}
+      \field{title}{Knuth-Morris-Pratt(KMP) algorithm String matching}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://yuminlee2.medium.com/knuth-morris-pratt-kmp-algorithm-string-matching-fb2a3ec6d682
+      \endverb
+      \verb{url}
+      \verb https://yuminlee2.medium.com/knuth-morris-pratt-kmp-algorithm-string-matching-fb2a3ec6d682
+      \endverb
+    \endentry
     \entry{5}{article}{}
       \name{author}{5}{}{%
         {{hash=00409e87f45d71d5e37814072cda5592}{%
@@ -358,6 +401,38 @@
       \endverb
       \verb{url}
       \verb https://oresta.org/menu-script/index.php/oresta/article/view/554
+      \endverb
+    \endentry
+    \entry{13}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=2061cd231d00c4a34c918309f89a1b38}{%
+           family={Thaker},
+           familyi={T\bibinitperiod},
+           given={Bhakti},
+           giveni={B\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Medium}%
+      }
+      \strng{namehash}{2061cd231d00c4a34c918309f89a1b38}
+      \strng{fullhash}{2061cd231d00c4a34c918309f89a1b38}
+      \strng{bibnamehash}{2061cd231d00c4a34c918309f89a1b38}
+      \strng{authorbibnamehash}{2061cd231d00c4a34c918309f89a1b38}
+      \strng{authornamehash}{2061cd231d00c4a34c918309f89a1b38}
+      \strng{authorfullhash}{2061cd231d00c4a34c918309f89a1b38}
+      \field{sortinit}{T}
+      \field{sortinithash}{9af77f0292593c26bde9a56e688eaee9}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Medium}
+      \field{month}{9}
+      \field{title}{Rabin-Karp, the string matching algorithm.}
+      \field{year}{2019}
+      \verb{urlraw}
+      \verb https://bhaktithaker.medium.com/rabin-karp-the-string-matching-algorithm-ca0ba1f8e5fa
+      \endverb
+      \verb{url}
+      \verb https://bhaktithaker.medium.com/rabin-karp-the-string-matching-algorithm-ca0ba1f8e5fa
       \endverb
     \endentry
   \enddatalist

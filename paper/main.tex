@@ -121,12 +121,23 @@ is expected to be $O(n \cdot m)$ \parencite{2}. The algorithm is better expresse
 \end{singlespace}
 \end{center}
 
+A practical example is also illustrated:
+
+\begin{figure}[H]
+	\includegraphics[scale=0.6]{naive_figure}
+	\centering
+	\caption{Illustrated Naive \parencite{11}}
+\end{figure}
+
+As can be seen, both indexes for the pattern (111) and the text (1011101110) begin at 0 and their first characters are compared. As they match, the indexes are incremented for both P and T and their respective characters matched. As they do not, the index for the pattern is reset to 0 and the text's index incremented. In the depicted example, this is repeated twice more before a match is found -- everytime the index of the pattern increases, it matches with the increasing text index.
+
 The best case scenario of this process is when $P_{i=0}$ is not present in $T$, yielding an
 $O(n)$ number of comparisons, making it particularly advantageous for solving problems
 with small $n$ and $m$ values. When larger sets are used however, the algorithm's efficiency significantly deteriorates. The worst case scenario for instance would be when
 all the characters for $P$ and $T$ are the same (${P_{i=0} \ldots P_{m-1}} = {T_{j=0} \ldots T_{n-1}}$) or
 when all the characters for both $P$ and $T$ are the same except for their last characters ($({P_{i=0} \ldots P_{m-2}} = {T_{j=0} \ldots T_{n-2}}) \land (P_{m-1} = T_{n-1})$). This would yield an
 $O(m \cdot (n - m + 1))$ number of comparisons.
+
 
 \subsection{Knuth-Morris-Pratt Algorithm}
 
@@ -231,9 +242,19 @@ below:
 \end{singlespace}
 \end{center}
 
+A practical example is also illustrated:
+
+\begin{figure}[H]
+	\includegraphics[scale=0.7]{kmp_figure}
+	\centering
+	\caption{Illustrated KMP \parencite{12}}
+\end{figure}
+
+Firstly, the pattern is pre-processed to create an LPS table. This works by iterating through each character of the pattern, and determining its earliest occurrence within it. For example, beginning with “k”, it is its first instance in the pattern and so there is no other earliest occurrence, so it is registered in the LPS table as -1, to indicate that there are not any. This repeats for the next 2 characters. Upon reaching index 3 with “k”, it is noticed that its earliest instance now exists and is found at index 0, and so it is registered in the LPS table as so. This process continues for the rest of the pattern. Afterwards, the “longest proper prefix which is also a suffix” is found by taking the longest sub-list of consecutive LPS values. In this case it would be indexes 6 to 1 (kmpkmp). This array is then used as part of the string matching to skip the unnecessary comparisons (in the example, since it is known that the prefix equals the suffix, when kmpkmd is reached, the next 7 characters can be skipped, since based on the LPS table they are known not to match).
+
 By skipping the unecessary character comparisons, the algorithm proves to be much
 more efficient than the Naive approach. This is seen in its worst-case time complexity,
-which is $O(n + m)$ (best-case time complexity remains the same). As for the time complexities in the pre-processing and matching phases, they are $O(m)$ and $O(n)$ respectively
+which is $O(n + m)$ (best-case time complexity remains the same). As for the time complexities in the pre-processing and matching phases, they are $O(m)$ and $O(n)$ respectively.
 
 \subsection{Rabin-Karp Algorithm}
 
@@ -314,44 +335,58 @@ The pseudocode for the algorithm is presented here below:
 \end{singlespace}
 \end{center}
 
+A practical example is also illustrated:
+
+\begin{figure}
+    \centering
+    \subfloat[\centering Pattern Hash Code]{{\includegraphics[scale=0.55]{rabin_karp_figure1} }}
+    \qquad
+    \subfloat[\centering Comparison With Text]{{\includegraphics[scale=0.55]{rabin_karp_figure2} }}
+    \caption{Illustrated Rabin Karp \parencite{13}}
+\end{figure}
+
+To aid with comprehension, the rolling hash function used to calculate hash values is replaced with a simplified hashing function: each character is converted to its numerical position within the alphabet (e.g. a = 1, b = 2). Since it is known that the pattern length is $m$ = 3, the hash values of groups of 3 characters are calculated from the text each time. Using the predefined assigned hash values for the characters, the pattern's hashcode is calculated to yield 4. This means that for each sub-group within the text that is examined, its hashcode should yield 4 to be deemed a potential match. In the example, the hashcode for the first group examined (aaa) is calculated (3). Since they do not match, the second sub-group is checked (aaa). This continues up until the end of the text, where no match is found.
+
 \section{Experimental Methodology}
 
 \subsection{Measuring Performance}
 
 To measure the detailed algorithms' performance, their mentioned pseudocode algorithms were programmed in $Python$ $3.12$. 
-Python was chosen due to it's wide array of third-party modules, two of which are used as part of the implementation: $Time$ and $Matplotlib$. 
-$Time$ is used to measure the algorithms' runtimes for each algorithm, and $Matplotlib$ is used to generate the graphical plots.
+Python was chosen due to it's wide array of third-party modules, three of which are used as part of the implementation: $time$, $matplotlib$ and $cProfile$. 
+$time$ is used to measure the algorithms' runtimes for each algorithm, $matplotlib$ is used to generate the graphical plots, and $cProfile$ is used to calculate the time and space-complexities of the programs.
+An experimental methodology was chosen as their is limited secondary data available due to the high specificity of the task. Furthermore, this methodology provides increased control over variable manipulation.
 Using their implementations, the following variables will be measured:
 
 \begin{enumerate}
 	\item \textbf{Dependent Variables} \\
-	\underline{Time (ms)} - The amount of time taken to search a pattern $P$ in a text $T$. \\
-	\underline{Number of Comparisons (pattern)} - The number of comparisons made between the pattern characters. \\
-	\underline{Number of Comparisons (text)} - The number of references made to the text (until all instances of the pattern are found).
+	\underline{Pre-processing runtime (ms)} - The amount of time taken to prepare the data prior to matching.\\
+	\underline{Matching runtime (ms)} - The amount of time taken to search a pattern $P$ in a text $T$.\\
+	\underline{Total number of comparisons} - The total number of references made to the text (until all instances of the pattern are found) \\
+	\underline{Total number of comparisons with unmatching characters} - The total number of references made to the text for characters that do not match (until all instances of the pattern are found).
 	\item \textbf{Control Variables} \\
 	\underline{Language} - Depending on whether the language employs a compiler or an interpetor, runtime speeds can differ. Moreover, the type of programming language (procedural, functional, etc.) can have an impact on how the code is run, further impacting runtime speed.\\
-	\underline{Pattern Length} - By controlling this factor, it is ensured that variations in number of comparisons and runtime are due to the algorithms themselves. This 
+	\underline{Pattern} - More specifically pattern length and occurrence within the text. By controlling this factor, it is ensured that variations in number of comparisons and runtime are due to the algorithms themselves. 
 \end{enumerate}
 
 The algorithms are then evaluated on their performance based on a set of constructed criteria:
 
 \begin{table}[!htbp]
     \centering
-    \begin{tabular}{|c|c|c|c|}
+    \begin{tabular}{|c|p{12cm}|}
         \hline
-        Criteria & Testing \\
+        \textbf{Criteria} & \textbf{Testing} \\
         \hline
-        Time complexity & A \\
-        Space complexity & B \\
-        Simplicity & A \\
-        Applicability & B \\
+        Time complexity & Using the $Python$ $cProfile$ library. \\[0.25cm]
+        Space complexity & Using the $Python$ $memory\_profiler$ library. \\[0.25cm]
+        Simplicity & Subjective qualitative judgement. \\[0.25cm]
+        Applicability & More specifically \textbf{pattern length} and \textbf{occurrence} within the text. By controlling this factor, it is ensured that variations in number of comparisons and runtime are due to the algorithms themselves. \\
         \hline
     \end{tabular}
     \caption{Evaluation Criteria}
 \end{table}
-
-\subsection{Application to Domains}
-Plagiarism detection, DNA sequencing, Search Engine
+\pagebreak
+\subsection{Dataset}
+Two pieces of primary data were collected for the experiment, the text and the patterns to match. The same text (3000 character long English text) was used across tests for all three algorithms. As for the patterns, 30 were obtained (generated pseudorandomly from text) each with a length of $m$ from 1 to 20 to yield a total of 600 data points. The high data yield will allow for more reliable and justified judgements on trends to be made. The choice of 30 patterns was made as it was found to be an appropriate quantity for a text of this length. As for the 20 lengths of $m$, this was done as it would provide a wide range of results to observe a trend without compromising on runtime. To account for edge cases, one pattern not found within the text was included.
 
 \section{Experimental Results Analysis}
 \subsection{Advantages and Disadvantages}
